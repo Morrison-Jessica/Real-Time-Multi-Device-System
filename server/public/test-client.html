@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vehicle state test client</title>
+  </head>
+  <body>
+    <h1>Vehicle state test client</h1>
+    <p>Connection: <span id="status">Connecting…</span></p>
+    <p>Snapshots received: <span id="count">0</span></p>
+    <p>Server timestamp (milliseconds): <span id="timestamp">Waiting…</span></p>
+    <form id="controls">
+      <p>
+        <label for="throttle">Throttle (0–1)</label>
+        <input id="throttle" type="number" min="0" max="1" step="0.01" value="0" required />
+      </p>
+      <p>
+        <label for="brake">Brake (0–1)</label>
+        <input id="brake" type="number" min="0" max="1" step="0.01" value="0" required />
+      </p>
+      <p>
+        <label for="steering">Steering (-1–1)</label>
+        <input id="steering" type="number" min="-1" max="1" step="0.01" value="0" required />
+      </p>
+      <button id="send" type="submit" disabled>Send controls</button>
+    </form>
+    <p>Open this page in two tabs. Send controls in one and observe both snapshots.</p>
+    <p>Position and speed remain stationary for this checkpoint.</p>
+    <pre id="state">Waiting for server state…</pre>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      const status = document.getElementById("status");
+      const send = document.getElementById("send");
+      let received = 0;
+
+      socket.on("connect", () => {
+        status.textContent = "Connected";
+        send.disabled = false;
+      });
+
+      socket.on("disconnect", () => {
+        status.textContent = "Disconnected";
+        send.disabled = true;
+      });
+
+      socket.on("connect_error", (error) => {
+        status.textContent = `Connection error: ${error.message}`;
+        send.disabled = true;
+      });
+
+      socket.on("state:update", (snapshot) => {
+        document.getElementById("count").textContent = String(++received);
+        document.getElementById("timestamp").textContent = String(snapshot.serverTimestamp);
+        document.getElementById("state").textContent = JSON.stringify(snapshot.vehicle, null, 2);
+      });
+
+      document.getElementById("controls").addEventListener("submit", (event) => {
+        event.preventDefault();
+        if (!socket.connected) return;
+
+        socket.emit("control:update", {
+          throttle: Number(document.getElementById("throttle").value),
+          brake: Number(document.getElementById("brake").value),
+          steering: Number(document.getElementById("steering").value),
+        });
+      });
+    </script>
+  </body>
+</html>
