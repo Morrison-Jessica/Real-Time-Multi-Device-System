@@ -66,7 +66,7 @@ function Gauge({ title, value, maximum, unit, displayDivisor = 1, redline }: Gau
           <Line x1={150} y1={140} x2={needle.x} y2={needle.y} stroke="#2563eb" strokeWidth={4} />
           <Circle cx={150} cy={140} r={6} fill="#2563eb" />
           <SvgText x={150} y={178} fontSize={22} textAnchor="middle" fill="#0f172a">
-            {value === null ? '—' : (value / displayDivisor).toFixed(1)} {unit}
+            {`${value === null ? '—' : (value / displayDivisor).toFixed(1)} ${unit}`}
           </SvgText>
         </Svg>
       </View>
@@ -130,8 +130,8 @@ export default function App() {
       <Text>State: {freshness}{age === null ? '' : ` · received ${(age / 1000).toFixed(1)} s ago`}</Text>
       <View style={styles.gauges}>
         <Gauge title="Speed" value={snapshot?.vehicle.speed ?? null} maximum={60} unit="m/s" />
-        {/* Preserve the lesson's thousands-based display with the RPM unit label for Module 2.5. */}
-        <Gauge title="RPM (derived)" value={displayRpm} maximum={6000} redline={5000} displayDivisor={1000} unit="RPM" />
+        {/* Module 2.5 fix: label the thousands-based RPM display with its matching unit. */}
+        <Gauge title="RPM (derived)" value={displayRpm} maximum={6000} redline={5000} displayDivisor={1000} unit="×1000 RPM" />
       </View>
       <Text>RPM display derived locally from throttle.</Text>
       <View style={styles.indicators}>
