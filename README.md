@@ -4,6 +4,14 @@
 
 A real-time vehicle control and monitoring system. A phone sends controls, a tablet shows the dashboard, and a web app displays state and a map.
 
+## Demo
+
+### Web & Tablet Dashboard
+![Web and tablet dashboard](map-box-web-tablet.png)
+
+### Mobile Controls
+![Phone throttle controls](mapbox-phone-throttle.png)
+
 ## Components
 
 - **mobile-controls:** Phone app with throttle, brake, and touch steering in landscape.
